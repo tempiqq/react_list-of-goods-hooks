@@ -16,14 +16,20 @@ export const goodsFromServer: readonly string[] = [
   'Garlic',
 ];
 
-const SORT_FIELD_ALPHABETICALLY = 'alphabetically' as const;
-const SORT_FIELD_LENGTH = 'length' as const;
-const SORT_FIELD_RESET = '' as const;
+// const SORT_FIELD_ALPHABETICALLY = 'alphabetically' as const;
+// const SORT_FIELD_LENGTH = 'length' as const;
+// const SORT_FIELD_RESET = '' as const;
 
-type SortFieldType =
-  | typeof SORT_FIELD_ALPHABETICALLY
-  | typeof SORT_FIELD_LENGTH
-  | typeof SORT_FIELD_RESET;
+enum SortFieldType {
+  Alphabetically = 'alphabetically',
+  Length = 'length',
+  Reset = '',
+}
+
+// type SortFieldType =
+//   | typeof SORT_FIELD_ALPHABETICALLY
+//   | typeof SORT_FIELD_LENGTH
+//   | typeof SORT_FIELD_RESET;
 
 interface GetPreparedGoodsOptions {
   sortField: SortFieldType;
@@ -39,9 +45,9 @@ function getPreparedGoods(
   if (sortField) {
     preparedGoods.sort((good1: string, good2: string): number => {
       switch (sortField) {
-        case SORT_FIELD_ALPHABETICALLY:
+        case SortFieldType.Alphabetically:
           return good1.localeCompare(good2);
-        case SORT_FIELD_LENGTH:
+        case SortFieldType.Length:
           return good1.length - good2.length;
 
         default:
@@ -58,7 +64,9 @@ function getPreparedGoods(
 }
 
 export const App: React.FC = () => {
-  const [sortField, setSortField] = useState<SortFieldType>(SORT_FIELD_RESET);
+  const [sortField, setSortField] = useState<SortFieldType>(
+    SortFieldType.Reset,
+  );
   const [isReversed, setIsReversed] = useState<boolean>(false);
 
   const visibleGoods: string[] = getPreparedGoods(goodsFromServer, {
@@ -67,11 +75,11 @@ export const App: React.FC = () => {
   });
 
   const isResetVisible: boolean = !(
-    sortField === SORT_FIELD_RESET && !isReversed
+    sortField === SortFieldType.Reset && !isReversed
   );
 
   const handleReset = () => {
-    setSortField(SORT_FIELD_RESET);
+    setSortField(SortFieldType.Reset);
     setIsReversed(false);
   };
 
@@ -81,9 +89,9 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={cn('button is-info', {
-            'is-light': sortField !== SORT_FIELD_ALPHABETICALLY,
+            'is-light': sortField !== SortFieldType.Alphabetically,
           })}
-          onClick={() => setSortField(SORT_FIELD_ALPHABETICALLY)}
+          onClick={() => setSortField(SortFieldType.Alphabetically)}
         >
           Sort alphabetically
         </button>
@@ -91,9 +99,9 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={cn('button is-info', {
-            'is-light': sortField !== SORT_FIELD_LENGTH,
+            'is-light': sortField !== SortFieldType.Length,
           })}
-          onClick={() => setSortField(SORT_FIELD_LENGTH)}
+          onClick={() => setSortField(SortFieldType.Length)}
         >
           Sort by length
         </button>
@@ -112,9 +120,7 @@ export const App: React.FC = () => {
           <button
             type="button"
             className="button is-danger is-light"
-            onClick={() => {
-              handleReset();
-            }}
+            onClick={handleReset}
           >
             Reset
           </button>
